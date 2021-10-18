@@ -1,13 +1,4 @@
-import AbrController from './controller/abr-controller';
-import AudioStreamController from './controller/audio-stream-controller';
-import AudioTrackController from './controller/audio-track-controller';
-import { SubtitleStreamController } from './controller/subtitle-stream-controller';
-import SubtitleTrackController from './controller/subtitle-track-controller';
 import BufferController from './controller/buffer-controller';
-import { TimelineController } from './controller/timeline-controller';
-import CapLevelController from './controller/cap-level-controller';
-import FPSController from './controller/fps-controller';
-import EMEController from './controller/eme-controller';
 import XhrLoader from './utils/xhr-loader';
 import FetchLoader, { fetchSupported } from './utils/fetch-loader';
 import Cues from './utils/cues';
@@ -153,27 +144,14 @@ export type HlsConfig = {
   fetchSetup?: (context: LoaderContext, initParams: any) => Request;
   xhrSetup?: (xhr: XMLHttpRequest, url: string) => void;
 
-  // Alt Audio
-  audioStreamController?: typeof AudioStreamController;
-  audioTrackController?: typeof AudioTrackController;
-  // Subtitle
-  subtitleStreamController?: typeof SubtitleStreamController;
-  subtitleTrackController?: typeof SubtitleTrackController;
-  timelineController?: typeof TimelineController;
-  // EME
-  emeController?: typeof EMEController;
 
-  abrController: typeof AbrController;
   bufferController: typeof BufferController;
-  capLevelController: typeof CapLevelController;
-  fpsController: typeof FPSController;
   progressive: boolean;
   lowLatencyMode: boolean;
 } & ABRControllerConfig &
   BufferControllerConfig &
   CapLevelControllerConfig &
   EMEControllerConfig &
-  FPSControllerConfig &
   FragmentLoaderConfig &
   LevelControllerConfig &
   MP4RemuxerConfig &
@@ -191,7 +169,6 @@ export const hlsDefaultConfig: HlsConfig = {
   startPosition: -1, // used by stream-controller
   defaultAudioCodec: undefined, // used by stream-controller
   debug: false, // used by logger
-  capLevelOnFPSDrop: false, // used by fps-controller
   capLevelToPlayerSize: false, // used by cap-level-controller
   initialLiveManifestSize: 1, // used by stream-controller
   maxBufferLength: 30, // used by stream-controller
@@ -226,8 +203,6 @@ export const hlsDefaultConfig: HlsConfig = {
   fragLoadingRetryDelay: 1000, // used by fragment-loader
   fragLoadingMaxRetryTimeout: 64000, // used by fragment-loader
   startFragPrefetch: false, // used by stream-controller
-  fpsDroppedMonitoringPeriod: 5000, // used by fps-controller
-  fpsDroppedMonitoringThreshold: 0.2, // used by fps-controller
   appendErrorMaxRetry: 3, // used by buffer-controller
   loader: XhrLoader,
   // loader: FetchLoader,
@@ -236,10 +211,7 @@ export const hlsDefaultConfig: HlsConfig = {
   xhrSetup: undefined, // used by xhr-loader
   licenseXhrSetup: undefined, // used by eme-controller
   licenseResponseCallback: undefined, // used by eme-controller
-  abrController: AbrController,
   bufferController: BufferController,
-  capLevelController: CapLevelController,
-  fpsController: FPSController,
   stretchShortVideoTrack: false, // used by mp4-remuxer
   maxAudioFramesDrift: 1, // used by mp4-remuxer
   forceKeyFrameOnDiscontinuity: true, // used by ts-demuxer
@@ -264,16 +236,6 @@ export const hlsDefaultConfig: HlsConfig = {
 
   // Dynamic Modules
   ...timelineConfig(),
-  subtitleStreamController: __USE_SUBTITLES__
-    ? SubtitleStreamController
-    : undefined,
-  subtitleTrackController: __USE_SUBTITLES__
-    ? SubtitleTrackController
-    : undefined,
-  timelineController: __USE_SUBTITLES__ ? TimelineController : undefined,
-  audioStreamController: __USE_ALT_AUDIO__ ? AudioStreamController : undefined,
-  audioTrackController: __USE_ALT_AUDIO__ ? AudioTrackController : undefined,
-  emeController: __USE_EME_DRM__ ? EMEController : undefined,
 };
 
 function timelineConfig(): TimelineControllerConfig {

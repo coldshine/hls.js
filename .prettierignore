@@ -1,8 +1,0 @@
-/api-docs
-/api-extractor/report
-/api-extractor/report-*
-/coverage
-/demo/libs
-/dist
-/lib
-package-lock.json

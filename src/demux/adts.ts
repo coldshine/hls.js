@@ -4,8 +4,8 @@
  */
 import { logger } from '../utils/logger';
 import { ErrorTypes, ErrorDetails } from '../errors';
-import type { HlsEventEmitter } from '../events';
-import { Events } from '../events';
+// import type { HlsEventEmitter } from '../events';
+// import { Events } from '../events';
 import type {
   DemuxedAudioTrack,
   AudioFrame,
@@ -46,12 +46,12 @@ export function getAudioConfig(
   adtsObjectType = ((data[offset + 2] & 0xc0) >>> 6) + 1;
   const adtsSamplingIndex = (data[offset + 2] & 0x3c) >>> 2;
   if (adtsSamplingIndex > adtsSampleingRates.length - 1) {
-    observer.trigger(Events.ERROR, {
-      type: ErrorTypes.MEDIA_ERROR,
-      details: ErrorDetails.FRAG_PARSING_ERROR,
-      fatal: true,
-      reason: `invalid ADTS sampling index:${adtsSamplingIndex}`,
-    });
+    // observer.trigger(Events.ERROR, {
+    //   type: ErrorTypes.MEDIA_ERROR,
+    //   details: ErrorDetails.FRAG_PARSING_ERROR,
+    //   fatal: true,
+    //   reason: `invalid ADTS sampling index:${adtsSamplingIndex}`,
+    // });
     return;
   }
   adtsChanelConfig = (data[offset + 2] & 0x01) << 2;
@@ -228,7 +228,7 @@ export function probe(data: Uint8Array, offset: number): boolean {
 
 export function initTrackConfig(
   track: DemuxedAudioTrack,
-  observer: HlsEventEmitter,
+  observer: any,
   data: Uint8Array,
   offset: number,
   audioCodec: string

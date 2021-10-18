@@ -1,5 +1,5 @@
 import { sliceUint8 } from './typed-array';
-import { ElementaryStreamTypes } from '../loader/fragment';
+// import { ElementaryStreamTypes } from '../loader/fragment';
 
 type Mp4BoxData = {
   data: Uint8Array;
@@ -236,13 +236,13 @@ export interface InitDataTrack {
   codec: string;
 }
 
-type HdlrType = ElementaryStreamTypes.AUDIO | ElementaryStreamTypes.VIDEO;
+// type HdlrType = ElementaryStreamTypes.AUDIO | ElementaryStreamTypes.VIDEO;
 
 export interface InitData extends Array<any> {
   [index: number]:
     | {
         timescale: number;
-        type: HdlrType;
+        type: any;
         default?: {
           duration: number;
           flags: number;
@@ -273,9 +273,9 @@ export function parseInitSegment(initSegment: Uint8Array): InitData {
           const hdlrType = bin2str(
             hdlr.data.subarray(hdlr.start + 8, hdlr.start + 12)
           );
-          const type: HdlrType | undefined = {
-            soun: ElementaryStreamTypes.AUDIO as const,
-            vide: ElementaryStreamTypes.VIDEO as const,
+          const type: any = {
+            soun: 'audio' as const,
+            vide: 'video' as const,
           }[hdlrType];
           if (type) {
             // Parse codec details
@@ -431,9 +431,9 @@ export function getDuration(data: Uint8Array, initData: InitData) {
       } else {
         rawDuration = computeRawDurationFromSamples(truns[j]);
       }
-      if (track.type === ElementaryStreamTypes.VIDEO) {
+      if (track.type === 'video') {
         videoDuration += rawDuration / timescale;
-      } else if (track.type === ElementaryStreamTypes.AUDIO) {
+      } else if (track.type === 'audio') {
         audioDuration += rawDuration / timescale;
       }
     }

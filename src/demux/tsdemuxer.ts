@@ -13,13 +13,13 @@ import * as ADTS from './adts';
 import * as MpegAudio from './mpegaudio';
 import ExpGolomb from './exp-golomb';
 import { utf8ArrayToStr } from './id3';
-import SampleAesDecrypter from './sample-aes';
-import { Events } from '../events';
+// import SampleAesDecrypter from './sample-aes';
+// import { Events } from '../events';
 import { appendUint8Array } from '../utils/mp4-tools';
 import { logger } from '../utils/logger';
 import { ErrorTypes, ErrorDetails } from '../errors';
 import type { HlsConfig } from '../config';
-import type { HlsEventEmitter } from '../events';
+// import type { HlsEventEmitter } from '../events';
 import type {
   DemuxedAvcTrack,
   DemuxedAudioTrack,
@@ -70,11 +70,11 @@ export interface TypeSupported {
 class TSDemuxer implements Demuxer {
   static readonly minProbeByteLength = 188;
 
-  private readonly observer: HlsEventEmitter;
+  // private readonly observer: HlsEventEmitter;
   private readonly config: HlsConfig;
   private typeSupported: TypeSupported;
 
-  private sampleAes: SampleAesDecrypter | null = null;
+  // private sampleAes: SampleAesDecrypter | null = null;
   private pmtParsed: boolean = false;
   private audioCodec!: string;
   private videoCodec!: string;
@@ -93,7 +93,7 @@ class TSDemuxer implements Demuxer {
   private remainderData: Uint8Array | null = null;
 
   constructor(
-    observer: HlsEventEmitter,
+    observer: any,
     config: HlsConfig,
     typeSupported: TypeSupported
   ) {
@@ -223,9 +223,9 @@ class TSDemuxer implements Demuxer {
     isSampleAes = false,
     flush = false
   ): DemuxerResult {
-    if (!isSampleAes) {
-      this.sampleAes = null;
-    }
+    // if (!isSampleAes) {
+    //   this.sampleAes = null;
+    // }
 
     let pes: PES | null;
 
@@ -391,12 +391,12 @@ class TSDemuxer implements Demuxer {
             break;
         }
       } else {
-        this.observer.emit(Events.ERROR, Events.ERROR, {
-          type: ErrorTypes.MEDIA_ERROR,
-          details: ErrorDetails.FRAG_PARSING_ERROR,
-          fatal: false,
-          reason: 'TS packet did not start with 0x47',
-        });
+        // this.observer.emit(Events.ERROR, Events.ERROR, {
+        //   type: ErrorTypes.MEDIA_ERROR,
+        //   details: ErrorDetails.FRAG_PARSING_ERROR,
+        //   fatal: false,
+        //   reason: 'TS packet did not start with 0x47',
+        // });
       }
     }
 
@@ -973,12 +973,12 @@ class TSDemuxer implements Demuxer {
         fatal = true;
       }
       logger.warn(`parsing error:${reason}`);
-      this.observer.emit(Events.ERROR, Events.ERROR, {
-        type: ErrorTypes.MEDIA_ERROR,
-        details: ErrorDetails.FRAG_PARSING_ERROR,
-        fatal,
-        reason,
-      });
+      // this.observer.emit(Events.ERROR, Events.ERROR, {
+      //   type: ErrorTypes.MEDIA_ERROR,
+      //   details: ErrorDetails.FRAG_PARSING_ERROR,
+      //   fatal,
+      //   reason,
+      // });
       if (fatal) {
         return;
       }

@@ -5,7 +5,7 @@ import {
   offsetStartDTS,
   parseInitSegment,
 } from '../utils/mp4-tools';
-import { ElementaryStreamTypes } from '../loader/fragment';
+// import { ElementaryStreamTypes } from '../loader/fragment';
 import { logger } from '../utils/logger';
 import type { TrackSet } from '../types/track';
 import type {
@@ -65,14 +65,14 @@ class PassThroughRemuxer implements Remuxer {
     if (!audioCodec) {
       audioCodec = getParsedTrackCodec(
         initData.audio,
-        ElementaryStreamTypes.AUDIO
+        'audio'
       );
     }
 
     if (!videoCodec) {
       videoCodec = getParsedTrackCodec(
         initData.video,
-        ElementaryStreamTypes.VIDEO
+        'video'
       );
     }
 
@@ -214,7 +214,7 @@ const computeInitPTS = (initData, data, timeOffset) =>
 
 function getParsedTrackCodec(
   track: InitDataTrack | undefined,
-  type: ElementaryStreamTypes.AUDIO | ElementaryStreamTypes.VIDEO
+  type: 'audio' | 'video'
 ): string {
   const parsedCodec = track?.codec;
   if (parsedCodec && parsedCodec.length > 4) {
@@ -229,7 +229,7 @@ function getParsedTrackCodec(
   if (parsedCodec === 'av01') {
     return 'av01.0.04M.08';
   }
-  if (parsedCodec === 'avc1' || type === ElementaryStreamTypes.VIDEO) {
+  if (parsedCodec === 'avc1' || type === 'video') {
     return 'avc1.42e01e';
   }
   return 'mp4a.40.5';

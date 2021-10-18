@@ -33,7 +33,7 @@ const lightPlugins = [...basePlugins, createDefinePlugin('light')];
 
 const baseConfig = {
   mode: 'development',
-  entry: './src/hls',
+  entry: './src/index',
   optimization: {
     splitChunks: false,
   },
@@ -118,34 +118,6 @@ const baseConfig = {
   },
 };
 
-function getAliasesForLightDist() {
-  let aliases = {};
-
-  if (!addEMESupport) {
-    aliases = Object.assign({}, aliases, {
-      './controller/eme-controller': './empty.js',
-    });
-  }
-
-  if (!addSubtitleSupport) {
-    aliases = Object.assign(aliases, {
-      './utils/cues': './empty.js',
-      './controller/timeline-controller': './empty.js',
-      './controller/subtitle-track-controller': './empty.js',
-      './controller/subtitle-stream-controller': './empty.js',
-    });
-  }
-
-  if (!addAltAudioSupport) {
-    aliases = Object.assign(aliases, {
-      './controller/audio-track-controller': './empty.js',
-      './controller/audio-stream-controller': './empty.js',
-    });
-  }
-
-  return aliases;
-}
-
 const multiConfig = [
   {
     name: 'debug',
@@ -178,79 +150,6 @@ const multiConfig = [
       globalObject: 'this',
     },
     plugins: mainPlugins,
-    devtool: 'source-map',
-  },
-  {
-    name: 'light',
-    mode: 'development',
-    output: {
-      filename: 'hls.light.js',
-      chunkFilename: '[name].js',
-      sourceMapFilename: 'hls.light.js.map',
-      path: path.resolve(__dirname, 'dist'),
-      publicPath: '/dist/',
-      library: 'Hls',
-      libraryTarget: 'umd',
-      libraryExport: 'default',
-      globalObject: 'this',
-    },
-    resolve: {
-      alias: getAliasesForLightDist(),
-    },
-    plugins: lightPlugins,
-    devtool: 'source-map',
-  },
-  {
-    name: 'light-dist',
-    mode: 'production',
-    output: {
-      filename: 'hls.light.min.js',
-      chunkFilename: '[name].js',
-      path: path.resolve(__dirname, 'dist'),
-      publicPath: '/dist/',
-      library: 'Hls',
-      libraryTarget: 'umd',
-      libraryExport: 'default',
-      globalObject: 'this',
-    },
-    resolve: {
-      alias: getAliasesForLightDist(),
-    },
-    plugins: lightPlugins,
-    devtool: 'source-map',
-  },
-  {
-    name: 'demo',
-    entry: './demo/main',
-    mode: 'development',
-    output: {
-      filename: 'hls-demo.js',
-      chunkFilename: '[name].js',
-      sourceMapFilename: 'hls-demo.js.map',
-      path: path.resolve(__dirname, 'dist'),
-      publicPath: '/dist/',
-      library: 'HlsDemo',
-      libraryTarget: 'umd',
-      libraryExport: 'default',
-      globalObject: 'this', // https://github.com/webpack/webpack/issues/6642#issuecomment-370222543
-    },
-    plugins: [
-      ...mainPlugins,
-      new webpack.DefinePlugin({
-        __NETLIFY__: JSON.stringify(
-          process.env.NETLIFY === 'true'
-            ? {
-                branch: process.env.BRANCH,
-                commitRef: process.env.COMMIT_REF,
-                reviewID:
-                  process.env.PULL_REQUEST === 'true'
-                    ? parseInt(process.env.REVIEW_ID)
-                    : null,
-              }
-            : {}
-        ),
-      }),
-    ],
     devtool: 'source-map',
   },
 ].map((config) => {
