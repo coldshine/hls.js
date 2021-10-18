@@ -18,7 +18,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "webpack --progress && npm run build:types",
+    "build": "webpack --progress",
     "dev": "webpack serve --progress --env debug --env demo --port 8000",
     "sanity-check": "npm run lint && npm run prettier:verify && npm run type-check && npm run docs && npm run build:types && npm run build && npm run test:unit",
     "start": "npm run dev"

@@ -60,14 +60,12 @@ export const handler = (ms, data) => {
 
     // loop through tracks that are going to be provided to bufferController
     let initSegment_;
-    Object.keys(initSegment.tracks).forEach((trackName) => {
-        const track = initSegment.tracks[trackName];
-        initSegment_ = track.initSegment;
-        if (initSegment_?.byteLength) {
-            console.log('initSegment?.byteLength', initSegment_?.byteLength)
-            sb.appendBuffer(initSegment_);
-        }
-    });
+    const track = initSegment.tracks.video;
+    initSegment_ = track.initSegment;
+    if (initSegment_.byteLength) {
+        console.log('initSegment.byteLength', initSegment_.byteLength)
+        sb.appendBuffer(initSegment_);
+    }
 
 
     const { data1, data2 } = video;
@@ -84,11 +82,12 @@ export const handler = (ms, data) => {
     sb.addEventListener('updateend', () => {
         console.log('buffer.byteLength', buffer.byteLength)
         if (!added) {
+            console.log('sourceBuffer after appending initSegment', sb.buffered, ms)
             sb.appendBuffer(buffer);
         } else {
-            console.log('sb', sb.buffered, ms)
+            console.log('sourceBuffer after appending video buffer', sb.buffered, ms)
             // ms.endOfStream();
-            console.log('ms.duration', ms.duration);
+            console.log('mediaSource.duration', ms.duration);
             console.log('Done!')
         }
         added = true;
