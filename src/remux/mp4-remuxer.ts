@@ -128,8 +128,6 @@ export default class MP4Remuxer implements Remuxer {
       this.ISGenerated ||
       flush;
 
-    console.log('>>> length', length);
-
     if (canRemuxAvc) {
       if (!this.ISGenerated) {
         initSegment = this.generateIS(videoTrack, timeOffset);
@@ -398,12 +396,8 @@ export default class MP4Remuxer implements Remuxer {
 
     if (requiresPositiveDts) {
       firstDTS = Math.max(0, firstDTS);
-      console.log('requiresPositiveDts!');
     }
 
-    console.log('firstDTS', firstDTS);
-    console.log('lastDTS', lastDTS);
-    console.log('nbSamples', nbSamples);
     let nbNalu = 0;
     let naluLen = 0;
     for (let i = 0; i < nbSamples; i++) {
