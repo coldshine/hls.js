@@ -40,7 +40,6 @@ export const handler = (ms, data) => {
     }
 
     const { avcTrack } = demuxer.demux(uintData, 0, false, true);
-    console.log('avcTrack', avcTrack);
     const remuxResult = remuxer.remux(
         avcTrack,
         0,
@@ -48,7 +47,6 @@ export const handler = (ms, data) => {
         false,
         'main'
     );
-    console.log('remuxResult', remuxResult);
 
     // -----
     // Buffering
@@ -63,7 +61,6 @@ export const handler = (ms, data) => {
     const track = initSegment.tracks.video;
     initSegment_ = track.initSegment;
     if (initSegment_.byteLength) {
-        console.log('initSegment.byteLength', initSegment_.byteLength)
         sb.appendBuffer(initSegment_);
     }
 
@@ -188,7 +185,6 @@ export const handler = (ms, data) => {
         } else {
             console.log('sourceBuffer after appending video buffer', sb.buffered, ms)
             // ms.endOfStream();
-            console.log('mediaSource.duration', ms.duration);
             console.log('Done!')
         }
         added = true;
