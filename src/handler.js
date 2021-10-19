@@ -78,6 +78,107 @@ export const handler = (ms, data) => {
         buffer = temp;
     }
 
+    let // this is the start of a huge multi-line var decl
+
+        /**
+         * Returns the string representation of an ASCII encoded four byte buffer.
+         * @param buffer {Uint8Array} a four-byte buffer to translate
+         * @return {string} the corresponding string
+         */
+        parseType = function (buffer) {
+            var result = '';
+            result += String.fromCharCode(buffer[0]);
+            result += String.fromCharCode(buffer[1]);
+            result += String.fromCharCode(buffer[2]);
+            result += String.fromCharCode(buffer[3]);
+            return result;
+        },
+        nalParse = function (avcStream) {
+            var avcView = new DataView(
+                    avcStream.buffer,
+                    avcStream.byteOffset,
+                    avcStream.byteLength
+                ),
+                result = [],
+                i,
+                length;
+            for (i = 0; i < avcStream.length; i += length) {
+                length = avcView.getUint32(i);
+                i += 4;
+                switch (avcStream[i] & 0x1f) {
+                    case 0x01:
+                        result.push('NDR');
+                        break;
+                    case 0x05:
+                        result.push('IDR');
+                        break;
+                    case 0x06:
+                        result.push('SEI');
+                        break;
+                    case 0x07:
+                        result.push('SPS');
+                        break;
+                    case 0x08:
+                        result.push('PPS');
+                        break;
+                    case 0x09:
+                        result.push('AUD');
+                        break;
+                    default:
+                        result.push(avcStream[i] & 0x1f);
+                        break;
+                }
+            }
+            return result;
+        },
+        // registry of handlers for individual mp4 box types
+        parse = {
+            mdat: function (data) {
+                return {
+                    byteLength: data.byteLength,
+                    nals: nalParse(data),
+                };
+            },
+        };
+
+    const mp4toJSON = (data) => {
+        let i = 0,
+            result = [],
+            view = new DataView(data.buffer, data.byteOffset, data.byteLength),
+            size,
+            type,
+            end,
+            box;
+
+        while (i < data.byteLength) {
+            // parse box data
+            size = view.getUint32(i);
+            type = parseType(data.subarray(i + 4, i + 8));
+            end = size > 1 ? i + size : data.byteLength;
+
+            // parse type-specific data
+            box = (
+                parse[type] ||
+                function (data) {
+                    return {
+                        data: data,
+                    };
+                }
+            )(data.subarray(i + 8, end));
+            box.size = size;
+            box.type = type;
+
+            // store this box and move to the next
+            result.push(box);
+            i = end;
+        }
+        return result;
+    };
+
+    const parsedData = mp4toJSON(data2);
+
+    console.log('>>>> can play stream?', parsedData[0].nals.includes('IDR'));
+
     let added = false;
     sb.addEventListener('updateend', () => {
         console.log('buffer.byteLength', buffer.byteLength)
