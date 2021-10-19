@@ -75,15 +75,36 @@ export const handler = (ms, data) => {
         buffer = temp;
     }
 
-    let // this is the start of a huge multi-line var decl
 
-        /**
-         * Returns the string representation of an ASCII encoded four byte buffer.
-         * @param buffer {Uint8Array} a four-byte buffer to translate
-         * @return {string} the corresponding string
-         */
-        parseType = function (buffer) {
-            var result = '';
+    console.log('Can play stream?', detectIDRFrame(data2));
+
+    let added = false;
+    sb.addEventListener('updateend', () => {
+        if (!added) {
+            console.log('sourceBuffer after appending initSegment', sb.buffered)
+            sb.appendBuffer(buffer);
+        } else {
+            console.log('sourceBuffer after appending video buffer', sb.buffered)
+            // ms.endOfStream();
+            console.log('Done!')
+        }
+        added = true;
+    });
+
+    sb.addEventListener('onerror', () => {
+        console.error('onerror');
+    });
+
+    sb.addEventListener('onabort', () => {
+        console.error('onabort');
+    })
+
+    return { initSegment: initSegment_, buffer }
+}
+
+const detectIDRFrame = (rawData) => {
+    const parseType = function (buffer) {
+            let result = '';
             result += String.fromCharCode(buffer[0]);
             result += String.fromCharCode(buffer[1]);
             result += String.fromCharCode(buffer[2]);
@@ -172,31 +193,7 @@ export const handler = (ms, data) => {
         return result;
     };
 
-    const parsedData = mp4toJSON(data2);
+    const parsedData = mp4toJSON(rawData);
 
-    console.log('>>>> can play stream?', parsedData[0].nals.includes('IDR'));
-
-    let added = false;
-    sb.addEventListener('updateend', () => {
-        console.log('buffer.byteLength', buffer.byteLength)
-        if (!added) {
-            console.log('sourceBuffer after appending initSegment', sb.buffered, ms)
-            sb.appendBuffer(buffer);
-        } else {
-            console.log('sourceBuffer after appending video buffer', sb.buffered, ms)
-            // ms.endOfStream();
-            console.log('Done!')
-        }
-        added = true;
-    });
-
-    sb.addEventListener('onerror', () => {
-        console.log('!!!');
-    });
-
-    sb.addEventListener('onabort', () => {
-        console.log('!!!');
-    })
-
-    return { initSegment: initSegment_, buffer }
+    return parsedData[0].nals.includes('IDR');
 }
